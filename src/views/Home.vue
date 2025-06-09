@@ -1,21 +1,29 @@
 <template>
   <div class="home-container">
+    <div class="header">
+      <LanguageSwitcher />
+    </div>
+    
     <el-card class="welcome-card">
-      <h1>Minimalist Todo App</h1>
-      <p>A simple, efficient way to manage your tasks</p>
+      <h1>{{ $t('home.title') }}</h1>
+      <p>{{ $t('home.subtitle') }}</p>
       
       <div class="action-buttons">
-        <el-button type="primary" @click="$router.push('/login')">Login</el-button>
-        <el-button @click="$router.push('/signup')">Sign Up</el-button>
+        <el-button type="primary" @click="$router.push('/login')">
+          {{ $t('nav.login') }}
+        </el-button>
+        <el-button @click="$router.push('/signup')">
+          {{ $t('nav.signup') }}
+        </el-button>
       </div>
       
       <div class="features">
-        <h2>Features</h2>
+        <h2>{{ $t('home.features') }}</h2>
         <ul>
-          <li>Simple and intuitive interface</li>
-          <li>Secure user authentication</li>
-          <li>Create, edit, and delete tasks</li>
-          <li>Mark tasks as complete</li>
+          <li>{{ $t('home.featureList.simple') }}</li>
+          <li>{{ $t('home.featureList.secure') }}</li>
+          <li>{{ $t('home.featureList.crud') }}</li>
+          <li>{{ $t('home.featureList.complete') }}</li>
         </ul>
       </div>
     </el-card>
@@ -23,23 +31,29 @@
 </template>
 
 <script setup>
-// No additional logic needed for the home page
+import LanguageSwitcher from '../components/LanguageSwitcher.vue'
 </script>
 
 <style scoped>
 .home-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
   min-height: 100vh;
   padding: 20px;
   background-color: #f5f7fa;
+}
+
+.header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
 }
 
 .welcome-card {
   max-width: 600px;
   width: 100%;
   text-align: center;
+  margin: 0 auto;
 }
 
 .action-buttons {

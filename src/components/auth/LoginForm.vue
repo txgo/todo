@@ -1,21 +1,21 @@
 <template>
   <el-form :model="form" @submit.prevent="handleLogin" label-position="top">
-    <el-form-item label="Email" prop="email">
-      <el-input v-model="form.email" type="email" placeholder="Your email" />
+    <el-form-item :label="$t('auth.email')" prop="email">
+      <el-input v-model="form.email" type="email" :placeholder="$t('auth.email')" />
     </el-form-item>
     
-    <el-form-item label="Password" prop="password">
-      <el-input v-model="form.password" type="password" placeholder="Your password" show-password />
+    <el-form-item :label="$t('auth.password')" prop="password">
+      <el-input v-model="form.password" type="password" :placeholder="$t('auth.password')" show-password />
     </el-form-item>
     
     <el-form-item>
       <el-button type="primary" native-type="submit" :loading="loading" class="submit-button">
-        Login
+        {{ $t('auth.login') }}
       </el-button>
     </el-form-item>
     
     <div class="forgot-password-link">
-      <router-link to="/forgot-password">忘记密码？</router-link>
+      <router-link to="/forgot-password">{{ $t('auth.forgotPassword') }}</router-link>
     </div>
     
     <el-alert
@@ -31,6 +31,7 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { supabase } from '../../services/supabase'
 
 const props = defineProps({
@@ -43,6 +44,7 @@ const props = defineProps({
 const emit = defineEmits(['login-success', 'login-error'])
 
 const router = useRouter()
+const { t } = useI18n()
 const loading = ref(false)
 const errorMessage = ref('')
 
@@ -56,13 +58,20 @@ const handleLogin = async () => {
     loading.value = true
     errorMessage.value = ''
     
-    // Validate form
+    // 验证表单
     if (!form.email || !form.password) {
-      errorMessage.value = 'Please fill in all fields'
+      errorMessage.value = t('auth.fillAllFields')
       return
     }
     
-    // Sign in with Supabase
+    // 验证邮箱格式
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(form.email)) {
+      errorMessage.value = t('auth.invalidEmail')
+      return
+    }
+    
+    // 使用 Supabase 登录
     const { data, error } = await supabase.auth.signInWithPassword({
       email: form.email,
       password: form.password
@@ -72,10 +81,10 @@ const handleLogin = async () => {
     
     emit('login-success', data.user)
     
-    // Redirect to dashboard on success
+    // 登录成功后重定向到仪表板
     router.push(props.redirectTo)
   } catch (error) {
-    errorMessage.value = error.message || 'An error occurred during login'
+    errorMessage.value = error.message || t('auth.invalidCredentials')
     emit('login-error', error)
   } finally {
     loading.value = false

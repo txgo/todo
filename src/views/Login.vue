@@ -1,13 +1,17 @@
 <template>
   <div class="login-container">
+    <div class="header">
+      <LanguageSwitcher />
+    </div>
+    
     <el-card class="login-card">
-      <h1>Login</h1>
+      <h1>{{ $t('auth.login') }}</h1>
       
       <login-form @login-success="onLoginSuccess" @login-error="onLoginError" />
       
       <div class="login-footer">
-        <p>Don't have an account? <router-link to="/signup">Sign up</router-link></p>
-        <p><router-link to="/forgot-password">忘记密码？</router-link></p>
+        <p>{{ $t('auth.noAccount') }} <router-link to="/signup">{{ $t('nav.signup') }}</router-link></p>
+        <p><router-link to="/forgot-password">{{ $t('auth.forgotPassword') }}</router-link></p>
       </div>
     </el-card>
   </div>
@@ -15,10 +19,14 @@
 
 <script setup>
 import { ElMessage } from 'element-plus'
+import { useI18n } from 'vue-i18n'
 import LoginForm from '../components/auth/LoginForm.vue'
+import LanguageSwitcher from '../components/LanguageSwitcher.vue'
+
+const { t } = useI18n()
 
 const onLoginSuccess = (user) => {
-  ElMessage.success('Login successful!')
+  ElMessage.success(t('auth.loginSuccess'))
 }
 
 const onLoginError = (error) => {
@@ -29,16 +37,23 @@ const onLoginError = (error) => {
 <style scoped>
 .login-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
   min-height: 100vh;
   padding: 20px;
   background-color: #f5f7fa;
 }
 
+.header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
 .login-card {
   max-width: 400px;
   width: 100%;
+  margin: 0 auto;
+  align-self: center;
 }
 
 h1 {

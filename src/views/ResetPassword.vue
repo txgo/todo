@@ -1,25 +1,29 @@
 <template>
   <div class="reset-password-container">
+    <div class="header">
+      <LanguageSwitcher />
+    </div>
+    
     <el-card class="reset-password-card">
-      <h1>重置密码</h1>
-      <p class="description">请输入您的新密码。</p>
+      <h1>{{ $t('auth.resetPassword') }}</h1>
+      <p class="description">{{ $t('auth.newPassword') }}</p>
       
       <el-form :model="form" @submit.prevent="handleResetPassword" label-position="top">
-        <el-form-item label="新密码" prop="password">
+        <el-form-item :label="$t('auth.newPassword')" prop="password">
           <el-input 
             v-model="form.password" 
             type="password" 
-            placeholder="请输入新密码" 
+            :placeholder="$t('auth.newPassword')" 
             show-password
             :disabled="loading"
           />
         </el-form-item>
         
-        <el-form-item label="确认新密码" prop="confirmPassword">
+        <el-form-item :label="$t('auth.confirmNewPassword')" prop="confirmPassword">
           <el-input 
             v-model="form.confirmPassword" 
             type="password" 
-            placeholder="请再次输入新密码" 
+            :placeholder="$t('auth.confirmNewPassword')" 
             show-password
             :disabled="loading"
           />
@@ -32,7 +36,7 @@
             :loading="loading" 
             class="submit-button"
           >
-            更新密码
+            {{ $t('auth.updatePassword') }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -54,7 +58,7 @@
       />
       
       <div class="reset-password-footer">
-        <p>返回 <router-link to="/login">登录页面</router-link></p>
+        <p>{{ $t('common.back') }} <router-link to="/login">{{ $t('nav.login') }}</router-link></p>
       </div>
     </el-card>
   </div>
@@ -63,10 +67,13 @@
 <script setup>
 import { reactive, ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { supabase } from '../services/supabase'
+import LanguageSwitcher from '../components/LanguageSwitcher.vue'
 
 const router = useRouter()
 const route = useRoute()
+const { t } = useI18n()
 const loading = ref(false)
 const errorMessage = ref('')
 const successMessage = ref('')
@@ -84,19 +91,19 @@ const handleResetPassword = async () => {
     
     // 验证表单
     if (!form.password || !form.confirmPassword) {
-      errorMessage.value = '请填写所有字段'
+      errorMessage.value = t('auth.fillAllFields')
       return
     }
     
     // 验证密码长度
     if (form.password.length < 6) {
-      errorMessage.value = '密码长度至少为6位'
+      errorMessage.value = t('auth.passwordTooShort')
       return
     }
     
     // 验证密码确认
     if (form.password !== form.confirmPassword) {
-      errorMessage.value = '两次输入的密码不一致'
+      errorMessage.value = t('auth.passwordsNotMatch')
       return
     }
     
@@ -107,7 +114,7 @@ const handleResetPassword = async () => {
     
     if (error) throw error
     
-    successMessage.value = '密码更新成功！正在跳转到登录页面...'
+    successMessage.value = t('auth.passwordUpdateSuccess')
     
     // 3秒后跳转到登录页面
     setTimeout(() => {
@@ -115,7 +122,7 @@ const handleResetPassword = async () => {
     }, 3000)
     
   } catch (error) {
-    errorMessage.value = error.message || '更新密码时出现错误，请稍后重试'
+    errorMessage.value = error.message || t('errors.general')
   } finally {
     loading.value = false
   }
@@ -129,7 +136,7 @@ onMounted(async () => {
     
     if (error) {
       console.error('Session error:', error)
-      errorMessage.value = '认证会话出现问题，请重新申请重置密码'
+      errorMessage.value = t('auth.sessionError')
       setTimeout(() => {
         router.push('/forgot-password')
       }, 3000)
@@ -138,14 +145,14 @@ onMounted(async () => {
     
     // 如果没有有效会话，重定向到忘记密码页面
     if (!data.session) {
-      errorMessage.value = '请先通过邮件中的重置链接进行认证'
+      errorMessage.value = t('auth.pleaseUseEmailLink')
       setTimeout(() => {
         router.push('/forgot-password')
       }, 3000)
     }
   } catch (error) {
     console.error('Mount error:', error)
-    errorMessage.value = '页面初始化出现错误，请重新申请重置密码'
+    errorMessage.value = t('errors.general')
     setTimeout(() => {
       router.push('/forgot-password')
     }, 3000)
@@ -156,16 +163,23 @@ onMounted(async () => {
 <style scoped>
 .reset-password-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
   min-height: 100vh;
   padding: 20px;
   background-color: #f5f7fa;
 }
 
+.header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
 .reset-password-card {
   max-width: 400px;
   width: 100%;
+  margin: 0 auto;
+  align-self: center;
 }
 
 h1 {

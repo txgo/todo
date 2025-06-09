@@ -1,15 +1,19 @@
 <template>
   <div class="forgot-password-container">
+    <div class="header">
+      <LanguageSwitcher />
+    </div>
+    
     <el-card class="forgot-password-card">
-      <h1>忘记密码</h1>
-      <p class="description">输入您的邮箱地址，我们将向您发送重置密码的链接。</p>
+      <h1>{{ $t('auth.resetPassword') }}</h1>
+      <p class="description">{{ $t('auth.resetLinkSent').split('.')[0] }}.</p>
       
       <el-form :model="form" @submit.prevent="handleForgotPassword" label-position="top">
-        <el-form-item label="邮箱地址" prop="email">
+        <el-form-item :label="$t('auth.email')" prop="email">
           <el-input 
             v-model="form.email" 
             type="email" 
-            placeholder="请输入您的邮箱地址" 
+            :placeholder="$t('auth.email')" 
             :disabled="loading"
           />
         </el-form-item>
@@ -21,7 +25,7 @@
             :loading="loading" 
             class="submit-button"
           >
-            发送重置链接
+            {{ $t('auth.sendResetLink') }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -43,7 +47,7 @@
       />
       
       <div class="forgot-password-footer">
-        <p>记起密码了？ <router-link to="/login">返回登录</router-link></p>
+        <p>{{ $t('auth.hasAccount') }} <router-link to="/login">{{ $t('auth.backToLogin') }}</router-link></p>
       </div>
     </el-card>
   </div>
@@ -51,8 +55,11 @@
 
 <script setup>
 import { reactive, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { supabase } from '../services/supabase'
+import LanguageSwitcher from '../components/LanguageSwitcher.vue'
 
+const { t } = useI18n()
 const loading = ref(false)
 const errorMessage = ref('')
 const successMessage = ref('')
@@ -69,14 +76,14 @@ const handleForgotPassword = async () => {
     
     // 验证表单
     if (!form.email) {
-      errorMessage.value = '请输入邮箱地址'
+      errorMessage.value = t('auth.emailRequired')
       return
     }
     
     // 验证邮箱格式
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(form.email)) {
-      errorMessage.value = '请输入有效的邮箱地址'
+      errorMessage.value = t('auth.invalidEmail')
       return
     }
     
@@ -87,11 +94,11 @@ const handleForgotPassword = async () => {
     
     if (error) throw error
     
-    successMessage.value = '重置密码链接已发送到您的邮箱，请查收邮件并按照指示重置密码。'
+    successMessage.value = t('auth.resetLinkSent')
     form.email = '' // 清空表单
     
   } catch (error) {
-    errorMessage.value = error.message || '发送重置链接时出现错误，请稍后重试'
+    errorMessage.value = error.message || t('errors.general')
   } finally {
     loading.value = false
   }
@@ -101,16 +108,23 @@ const handleForgotPassword = async () => {
 <style scoped>
 .forgot-password-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
   min-height: 100vh;
   padding: 20px;
   background-color: #f5f7fa;
 }
 
+.header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
 .forgot-password-card {
   max-width: 400px;
   width: 100%;
+  margin: 0 auto;
+  align-self: center;
 }
 
 h1 {

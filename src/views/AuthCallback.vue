@@ -5,8 +5,8 @@
         <el-icon class="loading-icon" size="48">
           <Loading />
         </el-icon>
-        <h2>正在处理认证...</h2>
-        <p>请稍候，我们正在验证您的重置链接。</p>
+        <h2>{{ $t('auth.authProcessing') }}</h2>
+        <p>{{ $t('auth.pleaseWait') }}</p>
       </div>
       
       <el-alert
@@ -23,10 +23,12 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { supabase } from '../services/supabase'
 import { Loading } from '@element-plus/icons-vue'
 
 const router = useRouter()
+const { t } = useI18n()
 const errorMessage = ref('')
 
 onMounted(async () => {
@@ -41,11 +43,11 @@ onMounted(async () => {
       console.error('Auth callback error:', { error, errorCode, errorDescription })
       
       if (errorCode === 'otp_expired') {
-        errorMessage.value = '重置链接已过期，请重新申请重置密码'
+        errorMessage.value = t('auth.resetLinkExpired')
       } else if (error === 'access_denied') {
-        errorMessage.value = '访问被拒绝，请重新申请重置密码'
+        errorMessage.value = t('auth.accessDenied')
       } else {
-        errorMessage.value = `认证失败：${errorDescription || error}`
+        errorMessage.value = `${t('auth.authFailed')}：${errorDescription || error}`
       }
       
       setTimeout(() => {
@@ -68,7 +70,7 @@ onMounted(async () => {
       
       if (sessionError) {
         console.error('Set session error:', sessionError)
-        errorMessage.value = '设置认证会话失败，请重新申请重置密码'
+        errorMessage.value = t('auth.sessionError')
         setTimeout(() => {
           router.push('/forgot-password')
         }, 3000)
@@ -78,14 +80,14 @@ onMounted(async () => {
         router.push('/reset-password')
       }
     } else {
-      errorMessage.value = '无效的重置链接，请重新申请重置密码'
+      errorMessage.value = t('auth.resetLinkInvalid')
       setTimeout(() => {
         router.push('/forgot-password')
       }, 3000)
     }
   } catch (error) {
     console.error('Auth callback mount error:', error)
-    errorMessage.value = '处理认证回调时出现错误，请重新申请重置密码'
+    errorMessage.value = t('errors.general')
     setTimeout(() => {
       router.push('/forgot-password')
     }, 3000)
