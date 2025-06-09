@@ -8,6 +8,7 @@ const Signup = () => import('../views/Signup.vue')
 const Dashboard = () => import('../views/Dashboard.vue')
 const ForgotPassword = () => import('../views/ForgotPassword.vue')
 const ResetPassword = () => import('../views/ResetPassword.vue')
+const AuthCallback = () => import('../views/AuthCallback.vue')
 
 const routes = [
   {
@@ -34,6 +35,11 @@ const routes = [
     path: '/reset-password',
     name: 'ResetPassword',
     component: ResetPassword
+  },
+  {
+    path: '/auth/callback',
+    name: 'AuthCallback',
+    component: AuthCallback
   },
   {
     path: '/dashboard',

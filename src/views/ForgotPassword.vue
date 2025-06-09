@@ -82,7 +82,7 @@ const handleForgotPassword = async () => {
     
     // 发送重置密码邮件
     const { error } = await supabase.auth.resetPasswordForEmail(form.email, {
-      redirectTo: `${window.location.origin}/reset-password`
+      redirectTo: `${window.location.origin}/auth/callback`
     })
     
     if (error) throw error

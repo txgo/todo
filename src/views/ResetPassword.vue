@@ -123,33 +123,32 @@ const handleResetPassword = async () => {
 
 // 检查用户是否通过有效的重置链接访问此页面
 onMounted(async () => {
-  const { data: { session } } = await supabase.auth.getSession()
-  
-  // 如果没有会话或者不是通过重置密码流程进入，重定向到忘记密码页面
-  if (!session) {
-    // 检查URL中是否有重置密码的参数
-    const accessToken = route.query.access_token
-    const refreshToken = route.query.refresh_token
+  try {
+    // 检查是否有有效的认证会话
+    const { data, error } = await supabase.auth.getSession()
     
-    if (accessToken && refreshToken) {
-      // 设置会话
-      const { error } = await supabase.auth.setSession({
-        access_token: accessToken,
-        refresh_token: refreshToken
-      })
-      
-      if (error) {
-        errorMessage.value = '重置链接无效或已过期，请重新申请重置密码'
-        setTimeout(() => {
-          router.push('/forgot-password')
-        }, 3000)
-      }
-    } else {
-      errorMessage.value = '请通过邮件中的链接访问此页面'
+    if (error) {
+      console.error('Session error:', error)
+      errorMessage.value = '认证会话出现问题，请重新申请重置密码'
+      setTimeout(() => {
+        router.push('/forgot-password')
+      }, 3000)
+      return
+    }
+    
+    // 如果没有有效会话，重定向到忘记密码页面
+    if (!data.session) {
+      errorMessage.value = '请先通过邮件中的重置链接进行认证'
       setTimeout(() => {
         router.push('/forgot-password')
       }, 3000)
     }
+  } catch (error) {
+    console.error('Mount error:', error)
+    errorMessage.value = '页面初始化出现错误，请重新申请重置密码'
+    setTimeout(() => {
+      router.push('/forgot-password')
+    }, 3000)
   }
 })
 </script>
