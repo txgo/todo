@@ -31,20 +31,30 @@ const errorMessage = ref('')
 
 onMounted(async () => {
   try {
-    // 处理 Supabase 认证回调
-    const { data, error } = await supabase.auth.getSession()
+    // 检查 URL hash 中是否有错误信息
+    const hashParams = new URLSearchParams(window.location.hash.substring(1))
+    const error = hashParams.get('error')
+    const errorCode = hashParams.get('error_code')
+    const errorDescription = hashParams.get('error_description')
     
     if (error) {
-      console.error('Auth callback error:', error)
-      errorMessage.value = '认证过程中出现错误，请重新申请重置密码'
+      console.error('Auth callback error:', { error, errorCode, errorDescription })
+      
+      if (errorCode === 'otp_expired') {
+        errorMessage.value = '重置链接已过期，请重新申请重置密码'
+      } else if (error === 'access_denied') {
+        errorMessage.value = '访问被拒绝，请重新申请重置密码'
+      } else {
+        errorMessage.value = `认证失败：${errorDescription || error}`
+      }
+      
       setTimeout(() => {
         router.push('/forgot-password')
-      }, 3000)
+      }, 5000)
       return
     }
     
-    // 检查 URL hash 中的认证参数
-    const hashParams = new URLSearchParams(window.location.hash.substring(1))
+    // 处理成功的认证回调
     const accessToken = hashParams.get('access_token')
     const refreshToken = hashParams.get('refresh_token')
     const type = hashParams.get('type')
@@ -58,7 +68,7 @@ onMounted(async () => {
       
       if (sessionError) {
         console.error('Set session error:', sessionError)
-        errorMessage.value = '重置链接无效或已过期，请重新申请重置密码'
+        errorMessage.value = '设置认证会话失败，请重新申请重置密码'
         setTimeout(() => {
           router.push('/forgot-password')
         }, 3000)
