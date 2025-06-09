@@ -1,3 +1,5 @@
+https://deepwiki.com/txgo/todo 
+
 # 极简待办事项应用 (Minimalist Todo App)
 
 一个使用 Vue.js 和 Supabase 构建的简单、高效的任务管理应用。
