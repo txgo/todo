@@ -14,6 +14,10 @@
       </el-button>
     </el-form-item>
     
+    <div class="forgot-password-link">
+      <router-link to="/forgot-password">忘记密码？</router-link>
+    </div>
+    
     <el-alert
       v-if="errorMessage"
       :title="errorMessage"
@@ -82,5 +86,20 @@ const handleLogin = async () => {
 <style scoped>
 .submit-button {
   width: 100%;
+}
+
+.forgot-password-link {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.forgot-password-link a {
+  color: #409eff;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.forgot-password-link a:hover {
+  text-decoration: underline;
 }
 </style>

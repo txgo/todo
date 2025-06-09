@@ -7,6 +7,7 @@
       
       <div class="login-footer">
         <p>Don't have an account? <router-link to="/signup">Sign up</router-link></p>
+        <p><router-link to="/forgot-password">忘记密码？</router-link></p>
       </div>
     </el-card>
   </div>

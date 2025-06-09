@@ -6,6 +6,8 @@ const Home = () => import('../views/Home.vue')
 const Login = () => import('../views/Login.vue')
 const Signup = () => import('../views/Signup.vue')
 const Dashboard = () => import('../views/Dashboard.vue')
+const ForgotPassword = () => import('../views/ForgotPassword.vue')
+const ResetPassword = () => import('../views/ResetPassword.vue')
 
 const routes = [
   {
@@ -22,6 +24,16 @@ const routes = [
     path: '/signup',
     name: 'Signup',
     component: Signup
+  },
+  {
+    path: '/forgot-password',
+    name: 'ForgotPassword',
+    component: ForgotPassword
+  },
+  {
+    path: '/reset-password',
+    name: 'ResetPassword',
+    component: ResetPassword
   },
   {
     path: '/dashboard',
